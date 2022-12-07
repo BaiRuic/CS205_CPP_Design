@@ -344,7 +344,7 @@ int main(){
 
 一般的系统是 4 对齐。
 
-在c语言中，struct就是数据的结合，但是在cpp中，struct和class 相差不大，所以typedef在cpp中也就不需要了
+在c语言中，struct就是数据的结合，如果想要定义一个结构体变量，需要加上struct，如果不想加，那就需要先 typdef。但是在cpp中，struct和class 相差不大，所以typedef在cpp中也就不需要了
 
 #### Union
 
@@ -555,5 +555,121 @@ delete p1;
 delete [] pa1;
 delete pa2;
 // 前者会调用数组内所有元素的析构函数，后者只会调用数组首元素的析构函数
+```
+
+## Chapter 6: Basics of Functions
+
+函数的本意是为了 代码复用，减少重复修改的次数，当然还可以使得代码更加整洁。
+
+```cpp
+#include<iostream>
+
+using std::cout;
+using std::endl;
+
+struct Matrix{
+    int row;
+    int column;
+    float * pData;  
+};
+
+float getMax(const Matrix * mat){
+    float maxM = __FLT_MIN__;
+    for(int i = 0; i < (*mat).row; i++){
+        for (int j =0; j <(*mat).column; j ++){
+            float val = (*mat).pData[i * mat->column + mat->row];
+            maxM = maxM > val? maxM : val;
+        }
+    }
+    return maxM;
+}
+
+int main(){
+    Matrix matA = {2, 3};
+    matA.pData = new float[matA.row * matA.column]{1.f, 2.f, 3.f};
+
+    Matrix matB = {1, 2};
+    matB.pData = new float[matB.row * matB.column]{100.f, 300.f};
+
+    cout<<"MatA的最大值为"<<getMax(&matA)<<endl;
+    cout<<"MatB的最大值为"<<getMax(&matB)<<endl;
+    
+    return 0;
+}
+```
+
+上述代码中，先定义了一个矩阵结构体，定义的时候，矩阵值使用一个指针变量来表示，有个好处就是，这个指针变量可以指向任意地方，而不像数组名。然后在初始化的时候，让这个指针指向一个数组即可。
+
+还有参数传递的时候，也使用值传递提高效率。
+
+函数定义需要放在调用前面，或者前面声明也可以。因为编译的时候是从上往下编译的。
+
+声明的时候，参数名字可以省略。
+
+当然，函数调用是由代价的！压栈入栈等
+
+### 函数传参
+
+由两种参数传递方式：
+
++ 值传递
++ 引用传递
+
+#### 值传递：
+
++ 基本类型作为参数的时候，传进去的是一份拷贝，不管是数值，还算地址，都是一份拷贝，地址的拷贝或者数值的拷贝。只不过传递的地址的话，可以通过该地址修改函数外面的值，但是传递数值的话没法修改。这里注意，传递指针的话，传进去的指针和外面的指针是同一个变量，函数参数这个指针可以指向别的地方但不会改变函数外面的指针。
+
++ 结构体类型作为参数，传进去的也是一份拷贝（浅拷贝，如果结构体内有指针的话，指针的那部分要理解为传递的指针）。但是如果结构体里面有指针变量的话，那么这两个拷贝有着相同的指针指(指针变量的值是一样的，这里相当于是指针传递了)，即可以通过修改这个拷贝的指针来修改函数外面结构体指针指向的内容。
+
+指针传递也是值传递的一种，这里的值是**指针**这个变量。
+
+```cpp
+func(int * p); //形参
+
+func(& data) // 实参
+```
+
+
+
+#### 引用传递
+
+引用传递只在cpp中有。引用定义如下：
+
+```cpp
+int num = 10;
+// & 放在类型后面就不再是取地址了，而是引用。
+// 表达的意思的是 numref 是num的一个别名，就是一块内存有两个名字，平起平坐的两个名字，对他们取地址之后，地址是相同的。
+int & numref = num; 
+```
+
+结构体类型的引用
+
+```cpp
+struct Matrix{
+    int row;
+    int col;
+    float * pData;
+}
+
+Matrix matA = {2, 3};
+matA.pData= new float[matA.row * matA.col]{3,23,12,12};
+
+Matrix & matA_ref = matA;  
+```
+
+注意：引用是个别名，指针是新定义一个指针变量，指向这个内存。
+
+引用定义的时候一定要初始化，后面就没法初始化了，语法上做不到。即一定要初始化到一个具体的对象上面，因此更加的安全。
+
+```cpp
+float getMax(Matrix & mat); // 形参
+
+getMax(mat); // 实参
+```
+
+引用传递会修改函数外面的值，因为是同一个东西。如果想要防止修改可以添加`const`关键字:
+
+```cpp
+float getMax(const Matrix & mat); // 形参
 ```
 
