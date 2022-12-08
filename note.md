@@ -659,7 +659,11 @@ Matrix & matA_ref = matA;
 
 注意：引用是个别名，指针是新定义一个指针变量，指向这个内存。
 
-引用定义的时候一定要初始化，后面就没法初始化了，语法上做不到。即一定要初始化到一个具体的对象上面，因此更加的安全。
+引用定义的时候一定要初始化，后面就没法初始化了，后面也没法改变引用对象了，语法上做不到。
+
+引用的对象一定要和定义的引用变量类型相同，且没法引用到常数上
+
+即一定要初始化到一个具体的对象上面，因此更加的安全。
 
 ```cpp
 float getMax(Matrix & mat); // 形参
@@ -673,3 +677,245 @@ getMax(mat); // 实参
 float getMax(const Matrix & mat); // 形参
 ```
 
+const修饰的引用变量没法被修改，且也没法再被非const 引用变量引用。
+
+```cpp
+// const 引用 可以引用非const对象
+//可以初始化一个const引用来对 变量的函数进行引用
+int i = 0;
+const int & r1 = i;
+const int & r2 = i * 2;
+int int & r3 = i * 5; // error
+```
+
+引用和指针的区别：
+
++ 引用创建的时候就必须初始化
++ 引用无法被初始化为空
+
++ 引用一旦创建，无法再被赋值。
+
++ sizeof(reference) 得到的是该变量的内存占用，sizeof(pointer) 得到的是指针的内存占用 (4byte or 8byte)
+
+
+
+### 函数返回
+
+值返回，返回之后，函数中的临时变量就会死亡：
+
++ 基本数据类型，数值被拷贝一份返回去
++ 指针变量，指针被拷贝一份返回去
++ 结构体类型，整个结构体被拷贝返回
+
+不要返回临时变量的地址或者引用
+
+### 内联函数
+
+函数调用是由代价的，会有栈操作和指针移动。
+
+inline 修饰的函数 ，在编译的时候会把指令塞到调用的地方，典型的以空间换取时间。但是只是建议，编译器不一定会遵从建议。
+
+宏是编译预处理阶段做一个文本替换，仅仅是文本替换，在遇到 `num++`  这样的文本时，可能会执行多次 `num++`.且宏中的变量一定要加括号
+
+## Chapter 7: Advances in Functions
+
+### 默认 arguments
+
+严格来说`int func(int num, float val = 0.0);` 这行代码中， val 称为 parameter , 后面的 0.0 称为 argument。只是在中文中习惯都叫做参数。
+
+又两个原则：
+
++ 默认参数一定要从尾部开始定义
++ 不能重复定义默认参数
+
+默认参数一定要从尾部开始定义，但是又例外，如：
+
+```cpp
+float norm(float x, float y, float z);
+float norm(float x, float y, float z=0.0);
+float norm(float x, float y=0.0, float z);
+```
+
+上述代码是可以运行的，但是第二行删掉或者第二行第三行兑换顺序之后就会报错了。可以看作效果叠加了。
+
+此外，不能重复定义某一个参数的默认参数。 
+
+函数声明和函数定义 只能有一个有默认参数，一般写在函数声明位置。
+
+### 函数重载
+
+函数重载只有cpp中有！
+
+编译器查找的时候，是依赖参数（argument-dependent lookup, ALD）的查找，但是返回值类型不会考虑
+
+**函数重载，不应该有歧义**
+
+函数重载，一旦让编译器为难不知道选择哪个函数的时候就会报错（比如说，定义了 add(int, int) add(int, float) 两个函数，而调用的时候，却使用了add(2, 4.5)， 这种让编译器为难的，就会报错）.
+
+但是如果没有重载，只有一个函数实现，此时，类型传错也仅仅只会有个警告，编译器会自动进行类型转换，然后调用那个唯一的函数。
+
+### 函数模板
+
+函数重载是使用了相同的函数名字，对于使用者来说，只需要记住同一个名字即可。
+而函数模板是用来同一套函数名字、函数实体逻辑，只是类型不同。
+
+如果仅仅是写了个函数模板，编译的时候，不会生成任何函数，因为类型还不知道，很多指令没法确定（比如 整形和浮点型的加法指令就不一样）。需要实例化函数模板，编译器才会 实例化这个函数。
+
+即函数模板是个虚的，必须实例化一个实实在在的函数，编译器才会生成具体对应的指令。实例化有两种：
+
++ 显式的实例化：专门写一行代码来实例化一个函数
++ 隐式的实例化：调用的时候，根据传入的参数来实例化
+
+```cpp
+// 定义一个函数模板
+template <typename T>
+T add(T num1, T num2){
+    cout<<"The type of num1 is :"<<typeid(T).name()<<endl;
+    return num1 + num2;
+}
+
+// 显式的实例化
+
+//有了这 三个实例化， 编译器就会生成三个 不同参数的函数，就像三个重载的函数
+template double  sum<double>(double, double);
+
+template char sum<>(char, char);
+
+template int sum(int, int);
+
+//隐式的实例化
+
+// <int> 指明了 T 是 int ，所以传入的参数会顺便做隐式类型转换
+cout<<add<int>(2.4f, 5.6f)<<endl;
+// <> 都省略了，那么直接根据 参数类型来 隐式的实例化
+cout<<add(2.4f, 4.2f)<<endl;
+```
+
+函数模板可以为某一种特定的类型开个后门，称为特例化（ specialization），比如我依旧使用上述的函数模板 sum，但是我的数据类型是个结构体Point，显然，+ 运算符是不支持结构体相加的，那么此时可以专门写一个 Point类型的sum (当然，也可以重载一个+好运算符，后面会讲):
+
+```cpp
+struct Point{
+    int x;
+    int y;
+};
+
+// 注意下面 特例化的语法 和前面显式实例化的区别，特例化 template 后面有一对尖括号<>
+//而实例化是没有尖括号的。
+template<>
+Point sum<Point>(const Point &p1, const Point &p2){
+    cout<<"The input type is:" << typeid(pt).name()<<endl;
+    Point p;
+    p.x = p1.x + p2.x;
+    p.t = p1.y + p2.y;
+    return p;
+}
+```
+
+ ### 函数指针
+
+函数指针是一个指针，是指向函数的指针，或者说，这个指针指向 <u>指令区域的数据</u>。
+
+先来学语法：
+
+```cpp
+// 有如下两个函数
+float norm_l1(float x, float y);
+float norm_l2(float x, float y);
+
+// 定义函数指针
+float (*norm_ptr) (float x, float y); //注意这里类型一定要弄对
+
+// 给函数指针赋值
+// 一种是直接 把函数名字赋给 指针，另外一种是取地址后赋给，效果是一样的！
+norm_ptr = norm_l1;
+norm_ptr = & norm_l1;
+
+
+
+// 使用,
+// 一种是直接调用函数，另外一种是 可以加个*
+float len1 = norm_ptr(-3.0f, 5.6f);
+float len2 = (*norm_ptr)(-3.4f, 4.5f);
+
+```
+
+不管是使用还是调用，都有两种方式，都是等价的。 
+
+函数指针一般用来把函数作为参数，比如回调函数
+
+
+
+### 函数引用
+
+```cpp
+// 有如下两个函数
+float norm_l1(float x, float y);
+float norm_l2(float x, float y);
+
+// 定义函数引用
+float (&norm_ptr) (float x, float y) = norm_l1; //注意这里类型一定要弄对,且引用必须初始化，函数引用也不例外
+```
+
+函数引用就是函数的一个别名，使用的时候，就当作普通的函数使用即可。
+
+## Chapter 8: Speedup Your Program
+
+
+
+
+
+
+
+## Chapter 9: Basics of Classes
+
+
+
+
+
+
+
+## Chapter 10: Advances in Classes
+
+
+
+
+
+## Chapter 11: Dynamic Memory Management in Classes
+
+
+
+
+
+
+
+## Chapter 12: Class Inheritance
+
+
+
+
+
+
+
+
+
+
+
+## Chapter 13: Class Templates and std Library
+
+
+
+
+
+
+
+## Chapter 14: Error Handling
+
+
+
+
+
+
+
+
+
+## Chapter 15: Nested Classes and RTTI
