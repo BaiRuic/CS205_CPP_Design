@@ -9,7 +9,10 @@
 - [ ] lab3
 - [ ] lab4
 
-- [x] [lab5](proj5)
+- [x] [lab5](lab5)
+- [x] [lab6](lab6)
+- [ ] [lab7](lab7)
+- [ ] 
 
 ### Project
 
