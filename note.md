@@ -864,10 +864,6 @@ float (&norm_ptr) (float x, float y) = norm_l1; //注意这里类型一定要弄
 
 
 
-
-
-
-
 ## Chapter 9: Basics of Classes
 
 

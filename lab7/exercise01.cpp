@@ -18,6 +18,10 @@ void displaySquare(int side, char filledCharacter){
         cout<<endl;
     }
     cout<<endl;
+
+
+
+    
 }
 
 
