@@ -866,7 +866,37 @@ float (&norm_ptr) (float x, float y) = norm_l1; //注意这里类型一定要弄
 
 ## Chapter 9: Basics of Classes
 
+构造函数的初始化列表
 
+构造函数的调用它时期是相同的，不管是动态申请的还是在内存中申请的。
+
+但是析构函数的调用是不一样的：
+
++ 对于在栈上的变量，离开当前作用域就自动执行析构函数，
+
++ 对于堆上的动态申请的变量，需要手动执行delete
+
+注：对于动态申请的数组。 Student *p = new students[5]，需要delete [] p ; 如果只是 delete p；虽然也可以释放掉所有内存，但是仅仅会执行students[0]的析构函数，数组中后面变量的析构函数不会被执行
+
+class 实例化后的对象中 函数成员具体的指令只有一份， 不会每次实例化一个对象，就把函数成员拷贝一份。也就是说，每个对象中，只有数据成员是独有的，函数成员是所有对象共享的。函数成员在执行的时候，为了区别具体是哪个对象在调用，有一个隐藏的参数，this， 指向调用者。然后成员函数一般没有歧义的话会省略写 this ->，但是有些时候，参数和成员变量名字相同，所以会加上 this -boin = boin；
+
+
+
+表示一个常量，可以使用宏，也可以使用 const 修饰 为常量。const的常规用法：
+
++ const int * p;  int const * p 表示指针指向的内容不能透过该指针修改
+
++ int * const p ; 表示该指针不能再指向别的地方。是个常量指针。
++ 用在参数传递时防止被修改，func(const int * p) func(const int &)
++ 类内 修饰成员变量和成员和函数：
+  + const int PMI = 24; 
+  + int func() const { // 函数体} 注意这里放到后面的，因为放到前面就和返回类型有歧义了。
+    不可以通过该函数修改对象的成员变量！
+
+静态 static 成员，是不绑定到某一个具体的实例上面的，即不管有几个对象，静态成员只有一个：
+
++ 静态 成员变量，静态成员变量在class 中只是声明，需要在class外面定义
++ 静态函数只能 对静态成员 做修改。因为调用静态成员的时候，可能一个实例对象都没有
 
 
 
@@ -878,7 +908,13 @@ float (&norm_ptr) (float x, float y) = norm_l1; //注意这里类型一定要弄
 
 
 
+
+
+
+
 ## Chapter 11: Dynamic Memory Management in Classes
+
+
 
 
 
@@ -899,6 +935,8 @@ float (&norm_ptr) (float x, float y) = norm_l1; //注意这里类型一定要弄
 
 
 ## Chapter 13: Class Templates and std Library
+
+
 
 
 
