@@ -22,5 +22,5 @@
 
 + Lecture videos on [Bilibili](https://www.bilibili.com/video/BV1Vf4y1P7pq)
 
-+ Lecture notes, projects and other materials on [Github](https://github.com/XDZhelheim/CS205_C_CPP_Lab)
++ Lecture notes, projects and other materials on [Github](https://github.com/ShiqiYu/CPP)
 
