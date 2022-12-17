@@ -3,14 +3,11 @@
 using namespace std;
 
 int main(){
-
-    Matrix<int> mat_a(2, 5, 5);
-    
-    Matrix<int> mat_b(5, 2, 2);
-    Matrix<int> mat_c = mat_a * mat_b;
-    mat_c *= mat_c;
-    mat_c.info();
-
-
+    Matrix<int> mat_a = Matrix<int>::readMat("./mat.txt");
+    mat_a.printMat();
+    Matrix<int> mat_b = mat_a.submatrix(1, 4, 1, 4);
+    mat_b.printMat();
+    mat_b.adjust_ROI(1, 4, 1, 5);
+    mat_b.printMat();
     return 0;
 }
