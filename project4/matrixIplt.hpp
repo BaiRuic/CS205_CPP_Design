@@ -229,6 +229,40 @@ Matrix<U> matrixMaultiply(const Matrix<U> & left, const Matrix<U> & right){
     return res;
 }
 
+template<typename T>
+size_t numberOfdigit(T n){
+    std::ostringstream strs;
+    strs << n;
+    return strs.str().size();
+}
+
+
+template<typename T>
+std::ostream & operator<<(std::ostream & os, const Matrix<T> & rhs){
+    // 先求得每列最长字符
+    size_t maxLenPreColumn[rhs.nCols] = {0};
+    for(size_t i=0; i<rhs.nRows; i++)
+        for(size_t j=0; j<rhs.nCols; j++){
+            size_t tempLen = numberOfdigit(rhs[i][j]);
+            if (tempLen > maxLenPreColumn[j])
+                maxLenPreColumn[j] = tempLen;
+        }
+
+    // format print
+    for(size_t i=0; i<rhs.nRows; i++){
+        os<<(i==0?"[[":" [");
+        for(size_t j=0; j<rhs.nCols; j++){
+            os<<std::setw(maxLenPreColumn[j])<<rhs[i][j];
+            if (j < rhs.nCols - 1)
+                os<<", ";
+        }
+        os<<(i==rhs.nRows-1?"]]":" ]");
+        if (i < rhs.nRows - 1)
+            os <<std::endl;
+    }
+    return os;       
+}
+
 
 template<typename T>
 Matrix<T> operator *(const Matrix<T> & left, const Matrix<T> &right){

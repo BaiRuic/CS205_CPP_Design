@@ -9,5 +9,7 @@ int main(){
     mat_b.printMat();
     mat_b.adjust_ROI(1, 4, 1, 5);
     mat_b.printMat();
+    mat_b[0][1] = 34232;
+    cout<<mat_b<<std::endl;
     return 0;
 }

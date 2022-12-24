@@ -2,6 +2,8 @@
 #define __MATRIX_HPP__
 
 #include<iostream>
+#include<iomanip>
+#include<sstream>
 #include<fstream>
 
 
@@ -51,6 +53,9 @@ class Matrix{
         template <typename U>
         friend Matrix<U> operator * (const Matrix<U> & left, const Matrix<U> &right);
         
+        template <typename U>
+        friend std::ostream & operator <<(std::ostream & os, const Matrix<U> & rhs);
+
 
         Matrix<T> copy() const;
         
